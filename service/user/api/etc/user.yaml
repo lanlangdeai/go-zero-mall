@@ -2,11 +2,21 @@ Name: User
 Host: 0.0.0.0
 Port: 8000
 
+Log:
+  Mode: console
+  Level: info
+  Encoding: plain
+  KeepDays: 15
+  TimeFormat: "2006-01-02 15:04:05.000"
+  Stat: false
+
+
+
 Mysql:
-  DataSource: root:123456@tcp(mysql:3306)/mall?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: root:123456@tcp(127.0.0.1:3306)/mall?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 
 CacheRedis:
-  - Host: redis:6379
+  - Host: 127.0.0.1:6379
     Pass:
     Type: node
 
@@ -15,7 +25,8 @@ Auth:
   AccessExpire: 86400
 
 UserRpc:
+  Timeout: 300000  # 5min
   Etcd:
     Hosts:
-      - etcd:2379
+      - 127.0.0.1:2379
     Key: user.rpc
