@@ -3,6 +3,7 @@ package svc
 import (
 	"mall/service/order/api/internal/config"
 	"mall/service/order/rpc/order"
+	"mall/service/product/rpc/product"
 
 	"github.com/zeromicro/go-zero/zrpc"
 )
@@ -10,7 +11,8 @@ import (
 type ServiceContext struct {
 	Config config.Config
 
-	OrderRpc order.Order
+	OrderRpc   order.Order
+	ProductRpc product.Product
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {

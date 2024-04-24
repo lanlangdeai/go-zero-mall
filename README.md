@@ -5,6 +5,15 @@
 
 ## 使用
 
+### 常用命令
+```shell
+# 生成rpc文件
+goctl rpc protoc product.proto --go-grpc_out=./type/product --go_out=./product --zrpc_out=./types/product
+```
+
+
+
+
 ### 1. `docker` 本地开发环境安装
 下载 [gonivinck](https://github.com/nivin-studio/gonivinck) 本地开发环境.
 
