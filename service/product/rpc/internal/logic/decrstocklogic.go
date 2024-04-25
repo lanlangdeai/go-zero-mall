@@ -57,7 +57,7 @@ func (l *DecrStockLogic) DecrStock(in *product.DecrStockRequest) (*product.DecrS
 		}
 		return err
 	})
-	if err == dtmcli.ErrFailure {
+	if err == dtmcli.ErrFailure { // 上层捕捉到ErrFailure错误之后, 才会进行回滚操作
 		return nil, status.Error(codes.Aborted, dtmcli.ResultFailure)
 	}
 
