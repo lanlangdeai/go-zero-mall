@@ -2,6 +2,10 @@ package logic
 
 import (
 	"context"
+	"database/sql"
+	"github.com/dtm-labs/dtmgrpc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"google.golang.org/grpc/status"
 
 	"mall/service/product/rpc/internal/svc"
 	"mall/service/product/rpc/product"
@@ -23,8 +27,25 @@ func NewDecrStockRevertLogic(ctx context.Context, svcCtx *svc.ServiceContext) *D
 	}
 }
 
+// 扣除库存逻辑回滚
 func (l *DecrStockRevertLogic) DecrStockRevert(in *product.DecrStockRequest) (*product.DecrStockResponse, error) {
-	// todo: add your logic here and delete this line
+	db, err := sqlx.NewMysql(l.svcCtx.Config.Mysql.DataSource).RawDB()
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+
+	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	// 开启子实物屏障
+	err = barrier.CallWithDB(db, func(tx *sql.Tx) error {
+		_, err := l.svcCtx.ProductModel.TxAdjustStock(l.ctx, tx, in.Id, 1)
+		return err
+	})
+	if err != nil {
+		return nil, err
+	}
 
 	return &product.DecrStockResponse{}, nil
 }

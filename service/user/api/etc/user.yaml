@@ -10,7 +10,8 @@ Log:
   TimeFormat: "2006-01-02 15:04:05.000"
   Stat: false
 
-
+ServerMiddlewaresConf:
+  Stat: false
 
 Mysql:
   DataSource: root:123456@tcp(127.0.0.1:3306)/mall?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai

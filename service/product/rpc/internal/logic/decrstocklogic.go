@@ -2,6 +2,12 @@ package logic
 
 import (
 	"context"
+	"database/sql"
+	"github.com/dtm-labs/dtmcli"
+	"github.com/dtm-labs/dtmgrpc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"mall/service/product/rpc/internal/svc"
 	"mall/service/product/rpc/product"
@@ -24,7 +30,32 @@ func NewDecrStockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *DecrSto
 }
 
 func (l *DecrStockLogic) DecrStock(in *product.DecrStockRequest) (*product.DecrStockResponse, error) {
-	// todo: add your logic here and delete this line
+	db, err := sqlx.NewMysql(l.svcCtx.Config.Mysql.DataSource).RawDB()
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	// 获取子事务屏障对象
+	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
+	if err != nil {
+		return nil, status.Error(500, err.Error())
+	}
+	// 开启子事务屏障
+	err = barrier.CallWithDB(db, func(tx *sql.Tx) error {
+		// 处理具体的逻辑, 库存数量-1
+		result, err := l.svcCtx.ProductModel.TxAdjustStock(l.ctx, tx, in.Id, -1)
+		if err != nil {
+			return err
+		}
+		// 库存扣除失败
+		affected, err := result.RowsAffected()
+		if err == nil && affected == 0 {
+			return dtmcli.ErrFailure
+		}
+		return err
+	})
+	if err == dtmcli.ErrFailure {
+		return nil, status.Error(codes.Aborted, dtmcli.ResultFailure)
+	}
 
 	return &product.DecrStockResponse{}, nil
 }

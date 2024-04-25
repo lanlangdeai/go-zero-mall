@@ -9,6 +9,8 @@
 ```shell
 # 生成rpc文件
 goctl rpc protoc product.proto --go-grpc_out=./type/product --go_out=./product --zrpc_out=./types/product
+
+goctl rpc protoc order.proto --go-grpc_out=. --go_out=. --zrpc_out=.
 ```
 
 

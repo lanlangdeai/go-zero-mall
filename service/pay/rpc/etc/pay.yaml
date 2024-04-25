@@ -1,6 +1,10 @@
 Name: pay.rpc
 ListenOn: 0.0.0.0:9003
 
+ServerMiddlewaresConf:
+  Stat: false
+
+
 Etcd:
   Hosts:
     - 127.0.0.1:2379

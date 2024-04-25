@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-
 	"mall/service/user/model"
 	"mall/service/user/rpc/internal/svc"
 	"mall/service/user/rpc/types/user"
@@ -26,6 +25,8 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 }
 
 func (l *UserInfoLogic) UserInfo(in *user.UserInfoRequest) (*user.UserInfoResponse, error) {
+	//uid, _ := l.ctx.Value("uid").(json.Number).Int64()
+	//fmt.Println("当前用户ID:", uid)
 	// 查询用户是否存在
 	res, err := l.svcCtx.UserModel.FindOne(l.ctx, in.Id)
 	if err != nil {
