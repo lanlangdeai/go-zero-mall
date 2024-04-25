@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/dtm-labs/dtmcli"
 	"github.com/dtm-labs/dtmgrpc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -34,6 +35,7 @@ func (l *DecrStockLogic) DecrStock(in *product.DecrStockRequest) (*product.DecrS
 	if err != nil {
 		return nil, status.Error(500, err.Error())
 	}
+	fmt.Println("[product-rpc]扣减库存")
 	// 获取子事务屏障对象
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	if err != nil {

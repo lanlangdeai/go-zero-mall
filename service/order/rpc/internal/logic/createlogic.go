@@ -98,6 +98,7 @@ func (l *CreateLogic) CreateByDtm(in *order.CreateRequest) (*order.CreateRespons
 		return nil, status.Error(500, err.Error())
 	}
 
+	fmt.Println("[order-rpc]创建订单")
 	// 获取子事务屏障对象
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	if err != nil {

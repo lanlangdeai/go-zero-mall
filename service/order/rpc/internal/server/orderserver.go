@@ -8,7 +8,7 @@ import (
 
 	"mall/service/order/rpc/internal/logic"
 	"mall/service/order/rpc/internal/svc"
-	"mall/service/order/rpc/order"
+	"mall/service/order/rpc/types/order"
 )
 
 type OrderServer struct {
