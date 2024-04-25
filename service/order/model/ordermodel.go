@@ -52,11 +52,12 @@ func (m *customOrderModel) FindAllByUid(ctx context.Context, uid int64) ([]*Orde
 	}
 }
 
-// 获取该用户的最新订单记录
-func (m *customOrderModel) FindOneByUid(ctx context.Context, uid int64) (*Order, error) {
+func (m *defaultOrderModel) FindOneByUid(ctx context.Context, uid int64) (*Order, error) {
 	var resp Order
-	query := fmt.Sprintf("select %s from %s where `uid` = ? order by `id` desc limit 1", orderRows, m.table)
-	err := m.QueryRowsNoCacheCtx(ctx, &resp, query, uid)
+
+	query := fmt.Sprintf("select %s from %s where `uid` = ? order by create_time desc limit 1", orderRows, m.table)
+	err := m.QueryRowNoCacheCtx(ctx, &resp, query, uid)
+
 	switch err {
 	case nil:
 		return &resp, nil
@@ -67,14 +68,16 @@ func (m *customOrderModel) FindOneByUid(ctx context.Context, uid int64) (*Order,
 	}
 }
 
-func (m *customOrderModel) TxInsert(ctx context.Context, tx *sql.Tx, data *Order) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?,?,?,?)", m.table, orderRowsExpectAutoSet)
-	return tx.ExecContext(ctx, query, data.Uid, data.Pid, data.Amount, data.Status)
+func (m *defaultOrderModel) TxInsert(ctx context.Context, tx *sql.Tx, data *Order) (sql.Result, error) {
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, orderRowsExpectAutoSet)
+	ret, err := tx.ExecContext(ctx, query, data.Uid, data.Pid, data.Amount, data.Status)
+
+	return ret, err
 }
 
-func (m *customOrderModel) TxUpdate(ctx context.Context, tx *sql.Tx, data *Order) error {
+func (m *defaultOrderModel) TxUpdate(ctx context.Context, tx *sql.Tx, data *Order) error {
 	productIdKey := fmt.Sprintf("%s%v", cacheOrderIdPrefix, data.Id)
-	_, err := m.Exec(func(conn sqlx.SqlConn) (sql.Result, error) {
+	_, err := m.Exec(func(conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, orderRowsWithPlaceHolder)
 		return tx.ExecContext(ctx, query, data.Uid, data.Pid, data.Amount, data.Status, data.Id)
 	}, productIdKey)
