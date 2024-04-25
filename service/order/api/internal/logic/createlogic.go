@@ -60,14 +60,14 @@ func (l *CreateLogic) CreateByDtm(req *types.CreateRequest) (resp *types.CreateR
 	gid := dtmgrpc.MustGenGid(dtmServer)
 	//创建一个saga协议的事务
 	saga := dtmgrpc.NewSagaGrpc(dtmServer, gid).
-		Add(productRpcServer+"/product.Product/DecrStock", productRpcServer+"/product.Product/DecrStockRevert", &product.DecrStockRequest{
-			Id:  req.Pid,
-			Num: 1,
-		}).Add(orderRpcServer+"/order.Order/Create", orderRpcServer+"/order.Order/CreateRevert", &order.CreateRequest{
-		Uid:    req.Uid,
-		Pid:    req.Pid,
-		Amount: req.Amount,
-		Status: req.Status,
+		Add(orderRpcServer+"/order.Order/Create", orderRpcServer+"/order.Order/CreateRevert", &order.CreateRequest{
+			Uid:    req.Uid,
+			Pid:    req.Pid,
+			Amount: req.Amount,
+			Status: req.Status,
+		}).Add(productRpcServer+"/product.Product/DecrStock", productRpcServer+"/product.Product/DecrStockRevert", &product.DecrStockRequest{
+		Id:  req.Pid,
+		Num: 1,
 	})
 	// 提交事务
 	err = saga.Submit()
