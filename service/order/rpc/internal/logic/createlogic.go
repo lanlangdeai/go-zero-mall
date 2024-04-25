@@ -123,6 +123,7 @@ func (l *CreateLogic) CreateByDtm(in *order.CreateRequest) (*order.CreateRespons
 		}
 		return nil
 	}); err != nil {
+		logx.Errorf("创建订单失败: %v", err)
 		return nil, status.Error(500, err.Error())
 	}
 

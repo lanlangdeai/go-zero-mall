@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/dtm-labs/dtmgrpc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"google.golang.org/grpc/status"
@@ -34,6 +35,7 @@ func (l *DecrStockRevertLogic) DecrStockRevert(in *product.DecrStockRequest) (*p
 		return nil, status.Error(500, err.Error())
 	}
 
+	fmt.Println("[product-rpc]扣减库存回滚")
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	if err != nil {
 		return nil, status.Error(500, err.Error())

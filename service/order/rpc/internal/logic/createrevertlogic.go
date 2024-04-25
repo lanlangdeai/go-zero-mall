@@ -36,6 +36,7 @@ func (l *CreateRevertLogic) CreateRevert(in *order.CreateRequest) (*order.Create
 		return nil, status.Error(500, err.Error())
 	}
 
+	fmt.Println("[order-rpc]创建订单回滚操作")
 	// 获取子事务屏障对象
 	barrier, err := dtmgrpc.BarrierFromGrpc(l.ctx)
 	if err != nil {
@@ -65,6 +66,7 @@ func (l *CreateRevertLogic) CreateRevert(in *order.CreateRequest) (*order.Create
 
 		return nil
 	}); err != nil {
+		logx.Errorf("创建订单回滚失败: %v", err)
 		return nil, status.Error(500, err.Error())
 	}
 

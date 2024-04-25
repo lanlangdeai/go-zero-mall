@@ -46,10 +46,12 @@ func (l *DecrStockLogic) DecrStock(in *product.DecrStockRequest) (*product.DecrS
 		// 处理具体的逻辑, 库存数量-1
 		result, err := l.svcCtx.ProductModel.TxAdjustStock(l.ctx, tx, in.Id, -1)
 		if err != nil {
+			logx.Errorf("扣除商品数量失败. 错误:%v", err)
 			return err
 		}
 		// 库存扣除失败
 		affected, err := result.RowsAffected()
+		logx.Infof("扣除商品数量. 影响行数:%d 错误:%v", affected, err)
 		if err == nil && affected == 0 {
 			return dtmcli.ErrFailure
 		}
@@ -57,6 +59,10 @@ func (l *DecrStockLogic) DecrStock(in *product.DecrStockRequest) (*product.DecrS
 	})
 	if err == dtmcli.ErrFailure {
 		return nil, status.Error(codes.Aborted, dtmcli.ResultFailure)
+	}
+
+	if err != nil {
+		return nil, err
 	}
 
 	return &product.DecrStockResponse{}, nil
